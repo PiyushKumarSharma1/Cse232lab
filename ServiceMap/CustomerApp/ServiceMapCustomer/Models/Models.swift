@@ -51,6 +51,14 @@ struct ProviderProfile: Codable, Identifiable {
     let zipCode: String
     let isGhost: Bool
     let status: ProviderStatus
+    
+    // Provider Tier & AI Features
+    let providerTier: ProviderTier
+    let lastTransactionDate: Date?
+    let totalLifetimeTransactions: Int
+    let consecutiveMonthsZeroTransactions: Int
+    let aiFeaturesUnlocked: AIFeatures
+    
     let rating: Double
     let reviewCount: Int
     let completionRate: Double
@@ -71,6 +79,20 @@ struct ProviderProfile: Codable, Identifiable {
         // Calculate based on current location (implemented in ViewModel)
         return "0.5 mi"
     }
+    
+    // Helper to check if a specific AI feature is unlocked
+    func isFeatureUnlocked(_ feature: AIFeature) -> Bool {
+        switch feature {
+        case .autoInvoice: return aiFeaturesUnlocked.autoInvoice
+        case .aiScheduler: return aiFeaturesUnlocked.aiScheduler
+        case .autoBookingAgent: return aiFeaturesUnlocked.autoBookingAgent
+        case .revenueForecast: return aiFeaturesUnlocked.revenueForecast
+        case .taxAssistant: return aiFeaturesUnlocked.taxAssistant
+        case .winBackCampaigns: return aiFeaturesUnlocked.winBackCampaigns
+        case .supplyAgent: return aiFeaturesUnlocked.supplyAgent
+        case .marketingAgent: return aiFeaturesUnlocked.marketingAgent
+        }
+    }
 }
 
 enum ProviderStatus: String, Codable {
@@ -78,6 +100,61 @@ enum ProviderStatus: String, Codable {
     case active
     case suspended
     case inactive
+}
+
+enum ProviderTier: String, Codable {
+    case new
+    case basic
+    case active
+    case elite
+}
+
+struct AIFeatures: Codable {
+    var autoInvoice: Bool = false
+    var aiScheduler: Bool = false
+    var autoBookingAgent: Bool = false
+    var revenueForecast: Bool = false
+    var taxAssistant: Bool = false
+    var winBackCampaigns: Bool = false
+    var supplyAgent: Bool = false
+    var marketingAgent: Bool = false
+}
+
+enum AIFeature: String, CaseIterable {
+    case autoInvoice = "Auto Invoice"
+    case aiScheduler = "AI Scheduler"
+    case autoBookingAgent = "Auto Booking Agent"
+    case revenueForecast = "Revenue Forecast"
+    case taxAssistant = "Tax Assistant"
+    case winBackCampaigns = "Win-Back Campaigns"
+    case supplyAgent = "Supply Agent"
+    case marketingAgent = "Marketing Agent"
+    
+    var unlockRequirement: String {
+        switch self {
+        case .autoInvoice: return "1 completed job"
+        case .aiScheduler: return "3 completed jobs"
+        case .autoBookingAgent: return "5 completed jobs"
+        case .revenueForecast: return "5 completed jobs"
+        case .taxAssistant: return "10 completed jobs"
+        case .winBackCampaigns: return "10 completed jobs"
+        case .supplyAgent: return "20 completed jobs"
+        case .marketingAgent: return "20 completed jobs"
+        }
+    }
+    
+    var description: String {
+        switch self {
+        case .autoInvoice: return "Automatically generate professional invoices after each job"
+        case .aiScheduler: return "AI-powered schedule optimization to minimize drive time"
+        case .autoBookingAgent: return "Let AI automatically accept bookings that match your rules"
+        case .revenueForecast: return "Predictive earnings forecasts and business insights"
+        case .taxAssistant: return "Track expenses, mileage, and generate tax reports"
+        case .winBackCampaigns: return "Automatically re-engage past customers"
+        case .supplyAgent: return "Smart supply ordering with affiliate discounts"
+        case .marketingAgent: return "Auto-generate social media posts from your work"
+        }
+    }
 }
 
 // MARK: - Service

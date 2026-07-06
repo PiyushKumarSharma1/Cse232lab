@@ -37,6 +37,14 @@ CREATE TABLE provider_profiles (
   zip_code VARCHAR(20) NOT NULL,
   is_ghost BOOLEAN DEFAULT FALSE,
   status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'active', 'suspended', 'inactive')),
+  
+  -- Provider Tier & Activity Tracking (for AI feature unlocking)
+  provider_tier VARCHAR(20) DEFAULT 'new' CHECK (provider_tier IN ('new', 'basic', 'active', 'elite')),
+  last_transaction_date TIMESTAMP WITH TIME ZONE,
+  total_lifetime_transactions INTEGER DEFAULT 0,
+  consecutive_months_zero_transactions INTEGER DEFAULT 0,
+  ai_features_unlocked JSONB DEFAULT '{"auto_invoice": false, "ai_scheduler": false, "auto_booking_agent": false, "revenue_forecast": false, "tax_assistant": false, "win_back_campaigns": false, "supply_agent": false, "marketing_agent": false}',
+  
   rating DECIMAL(3,2) DEFAULT 0,
   review_count INTEGER DEFAULT 0,
   completion_rate DECIMAL(5,2) DEFAULT 0,

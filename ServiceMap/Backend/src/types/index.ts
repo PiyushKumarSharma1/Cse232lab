@@ -29,6 +29,18 @@ export const CreateUserSchema = z.object({
 
 // Provider schemas
 export const ProviderStatusSchema = z.enum(['pending', 'active', 'suspended', 'inactive']);
+export const ProviderTierSchema = z.enum(['new', 'basic', 'active', 'elite']);
+
+export const AIFeaturesSchema = z.object({
+  autoInvoice: z.boolean().default(false),
+  aiScheduler: z.boolean().default(false),
+  autoBookingAgent: z.boolean().default(false),
+  revenueForecast: z.boolean().default(false),
+  taxAssistant: z.boolean().default(false),
+  winBackCampaigns: z.boolean().default(false),
+  supplyAgent: z.boolean().default(false),
+  marketingAgent: z.boolean().default(false),
+});
 
 export const ProviderProfileSchema = z.object({
   id: z.string().uuid(),
@@ -46,6 +58,23 @@ export const ProviderProfileSchema = z.object({
   zipCode: z.string(),
   isGhost: z.boolean().default(false),
   status: ProviderStatusSchema.default('pending'),
+  
+  // Provider Tier & AI Features
+  providerTier: ProviderTierSchema.default('new'),
+  lastTransactionDate: z.date().optional(),
+  totalLifetimeTransactions: z.number().default(0),
+  consecutiveMonthsZeroTransactions: z.number().default(0),
+  aiFeaturesUnlocked: AIFeaturesSchema.default(() => ({
+    autoInvoice: false,
+    aiScheduler: false,
+    autoBookingAgent: false,
+    revenueForecast: false,
+    taxAssistant: false,
+    winBackCampaigns: false,
+    supplyAgent: false,
+    marketingAgent: false,
+  })),
+  
   rating: z.number().default(0),
   reviewCount: z.number().default(0),
   completionRate: z.number().default(0),
@@ -217,4 +246,6 @@ export type Message = z.infer<typeof MessageSchema>;
 export type CreateMessage = z.infer<typeof CreateMessageSchema>;
 export type UserRole = z.infer<typeof UserRoleSchema>;
 export type ProviderStatus = z.infer<typeof ProviderStatusSchema>;
+export type ProviderTier = z.infer<typeof ProviderTierSchema>;
+export type AIFeatures = z.infer<typeof AIFeaturesSchema>;
 export type BookingStatus = z.infer<typeof BookingStatusSchema>;
